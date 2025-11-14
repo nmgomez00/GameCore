@@ -1,6 +1,6 @@
 import { ConsoleSVG, ControllerSVG, StoreSVG, ThrobberSVG, UserSVG } from '@/assets'
 import { useGlobalContext, useLibraryContext, useMenuContext } from '@/context'
-import type { GameListResponse } from '@/models'
+import type { GameListResponse, UserModel } from '@/models'
 import { makeApiCall } from '@/services/apiCall'
 import { QUERY_KEYS } from '@/utils'
 import { useQuery } from '@tanstack/react-query'
@@ -10,7 +10,7 @@ import { GameSideCard } from '../game'
 import { GCButton } from '../GCgenerics'
 
 export function AsideBar() {
-	const { clientUser } = useGlobalContext()
+	const { clientUser, setClientUser } = useGlobalContext()
 	const { libraryGames, setLibraryGames } = useLibraryContext()
 	const { isMenuActive, setIsMenuActive, enabled, setEnabled } = useMenuContext()
 
@@ -78,7 +78,7 @@ export function AsideBar() {
 						{/* or just use css... */}
 						<div className="flex items-center">
 							<div className="grow border-t border-neutral-800"></div>
-							<h4 className="shrink mx-1 font-semibold">Installed Games</h4>
+							<h4 className="shrink mx-1 font-semibold">Your games</h4>
 							<div className="grow border-t border-neutral-800"></div>
 						</div>
 
@@ -107,25 +107,17 @@ export function AsideBar() {
 								Log In
 							</GCButton>
 						) : (
-							<span className="flex flex-row w-fit gap-x-2 items-center">
-								<GCButton
-									theme="primary"
-									className="flex gap-0.5 max-w-[100px]! text-nowrap! px-2! py-1!"
-									onClick={() => void 0}
-								>
-									Profile
-								</GCButton>
-								<GCButton
-									theme="ghost"
-									className="flex gap-0.5 max-w-[100px]! text-nowrap! px-2! py-1!"
-									onClick={() => {
-										localStorage.clear()
-										navigate(location, { replace: true })
-									}}
-								>
-									Log Out
-								</GCButton>
-							</span>
+							<GCButton
+								theme="ghost"
+								className="flex gap-0.5 max-w-[100px]! text-nowrap! px-2! py-1!"
+								onClick={() => {
+									localStorage.clear()
+									setClientUser({} as UserModel)
+									navigate(location, { replace: true })
+								}}
+							>
+								Log Out
+							</GCButton>
 						)}
 					</Link>
 				</footer>

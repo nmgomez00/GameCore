@@ -39,11 +39,15 @@ export const App = function App() {
 					<Route path="/" component={() => <LandingPage />} />
 					<Route
 						path="/auth"
-						component={() => (
-							<AuthContextProvider>
-								<AuthPage />
-							</AuthContextProvider>
-						)}
+						component={() =>
+							clientUser?.id == undefined ? (
+								<AuthContextProvider>
+									<AuthPage />
+								</AuthContextProvider>
+							) : (
+								<Redirect href="/library" />
+							)
+						}
 					/>
 
 					<Route
@@ -82,7 +86,7 @@ export const App = function App() {
 						)}
 					/>
 
-					<Route component={() => <Redirect href="/auth" />} />
+					<Route component={() => (clientUser?.id ? <Redirect href="/library" /> : <Redirect href="/auth" />)} />
 				</Switch>
 			</Suspense>
 		</main>
