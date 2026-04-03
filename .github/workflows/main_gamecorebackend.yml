@@ -13,7 +13,7 @@ jobs:
   build:
     runs-on: windows-latest
     permissions:
-      contents: read #This is required for actions/checkout
+      contents: read
 
     steps:
       - uses: actions/checkout@v4
@@ -21,33 +21,42 @@ jobs:
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '10.x'
+          dotnet-version: "10.x"
 
+      # Ejecutamos el restore apuntando a la carpeta del backend
+      - name: Restore dependencies
+        run: dotnet restore ./backend
+
+      # Compilamos el proyecto dentro de la carpeta /backend
       - name: Build with dotnet
-        run: dotnet build --configuration Release
+        run: dotnet build ./backend --configuration Release --no-restore
 
+      # Publicamos los archivos listos para producción en una carpeta temporal 'publish_output'
       - name: dotnet publish
-        run: dotnet publish -c Release -o "${{env.DOTNET_ROOT}}/myapp"
+        run: dotnet publish ./backend -c Release -o ./publish_output
 
+      # Subimos esa carpeta como un artefacto para el siguiente Job
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+          path: ./publish_output
 
   deploy:
     runs-on: windows-latest
     needs: build
     permissions:
-      id-token: write #This is required for requesting the JWT
-      contents: read #This is required for actions/checkout
+      id-token: write
+      contents: read
 
     steps:
+      # Descargamos los archivos compilados en una carpeta llamada 'deploy_dir'
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
           name: .net-app
-      
+          path: ./deploy_dir
+
       - name: Login to Azure
         uses: azure/login@v2
         with:
@@ -55,11 +64,11 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_6F8BA954A11A48FDBCA3BC5AD74AB30D }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_5AB8343F0595463DB1DC4DB8F24446C2 }}
 
+      # Desplegamos indicando que el paquete está en './deploy_dir'
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'GameCoreBackend'
-          slot-name: 'Production'
-          package: .
-          
+          app-name: "GameCoreBackend"
+          slot-name: "Production"
+          package: ./deploy_dir
