@@ -47,7 +47,7 @@ builder.Services.AddSwaggerGen(options =>
 });
 builder.Services.AddAutoMapper(opts => { }, typeof(Mapping));
 // DB
-const string ConnectionName = "devConnection";
+const string ConnectionName = "DefaultConnection";
 
 var connectionStringValue = builder.Configuration.GetConnectionString(ConnectionName);
 
@@ -190,7 +190,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: "MiPoliticaCORS",
         builder =>
         {
-            builder.WithOrigins("https://gamecore.pages.dev", "http://localhost:5173"
+            builder.WithOrigins("https://proud-bush-0924d800f.1.azurestaticapps.net", "http://localhost:5173"
             )
                    .AllowAnyHeader()
                    .AllowAnyMethod()
