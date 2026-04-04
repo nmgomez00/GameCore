@@ -1,5 +1,5 @@
 import type { GameModel, GenreDTO } from '@/models'
-export const SERVER_URL = 'https://gamecorebackendutn-fnhkf6f5gdahfad7.brazilsouth-01.azurewebsites.net' as const
+export const SERVER_URL = 'gamecorebackend-cqecfmhza7f7f2gh.brazilsouth-01.azurewebsites.net' as const
 
 export const MAX_FETCH_TIMEOUT = 5000 as const //5 secs
 
